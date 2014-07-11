@@ -20,8 +20,13 @@ var News        = require('./app/models/news');
 
 
 // here we can set the timer function..
-
+getTopTen = function() {
+  try {
+    
+  } catch(ex) { console.log(ex); }
+}
 
 var timer = setInterval(function() {
-  console.log('timer fired..');  
+  console.log('timer fired..');
+  getTopTen();
 }, 5000);
