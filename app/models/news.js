@@ -8,7 +8,9 @@ var NewsSchema    = new Schema({
   author      : String,
   link        : String,
   content     : String,
-  publicshed  : Date,
+  html        : String,
+  published   : Date,
+  document    : String,
   words       :  [],
   feed        :  {
     name    : String,
