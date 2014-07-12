@@ -8,6 +8,7 @@
     "boilerpipe"       : "*",
     "feed-read"        : "*",
     "node-readability" : "*",
+    "uri-js"           : "*",
     "q"                : "*",
     "feedparser"       : "*"
 	}

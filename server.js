@@ -9,6 +9,8 @@ var q           = require('q');
 var feed        = require('feed-read');
 var mongoose    = require('mongoose');
 var fs          = require('fs');
+var URI         = require('uri-js');
+var querystring = require('querystring');
 
 
 var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
@@ -16,63 +18,74 @@ var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/ne
 mongoose.connect(dbUri);
 
 mongoose.connection.on('connected', function () { console.log('connection successful..');   });
-mongoose.connection.on('error', function(err)   { console.log('connection error: %s', err); });
+mongoose.connection.on('error', function(err)   { console.log('connection error: %s', err); return;});
 
 console.log('connected to mongodb..');
 
 var News        = require('./app/models/news');
 
-
 // here we can set the timer function..
-getTopTen = function() {
+getGoogleNews = function() {
   try {
     feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
-        console.log('getTopTen(): found %d articles', articles.length);
-        // loop through each article
+        console.log('getGoogleNews(): found %d articles\n\n', articles.length);
+        
         for(var i=0; i<articles.length; i++) {
-          processArticle(articles[i]);
+          //processArticle(articles[i]);
+          var components = URI.parse(articles[i].link);
+          var query = querystring.parse(components.query);
+          console.log('%s\n\n', query.url );
         }
-        console.log('GoogleNews reqeust fullfilled..');
       }
   });
   } catch(ex) { console.log(ex); }
 }
 
 processArticle = function(article) {
-  console.log('processArticle()..');
+  //console.log('processArticle()..');
   try {
     // test to see if link is in database..
+    // strip out url from google news ul..
+    
+    var deferred = q.defer();
+    
     var query = News.findOne({'link' : article.link});
-    query.exec(function(err, news) {
-      console.log('err: %s', err);
-      console.log('news %s', news);
-//       if(err) { // not found
-//         console.log('article "%s" not found, off to parsing', article.title);
-//         parseArticle(article);
-//       } else { // found
-//         console.log('article %s found..', news);
-//       }
+    
+    query.exec(function(err, result) {
+      //console.log('not in DB, adding "%s"', article.title);
+      parseArticle(article);
+//       console.log("\terror: %s", err);
+//       console.log("\tresult: %s", JSON.stringify(result, null, 2));
+      if(err === null && result === null) { // add to db
+        deferred.resolve();
+      } else { // ignore
+        
+      }
     });
+    return deferred.promise;
   } catch(ex) { console.log('processArticle() ex: ' + ex); }
 }
 
 parseArticle = function(article) {
-  console.log('parseArticle()..');
   try {
     read(article.link, function(err, art, meta) {
-      if(err) {console.log('parseArticle.read() err: %s', err); } else {
+      //console.log('"%s"\n\tErr: %s\n\tArt: %s', article.title, err, art);
+      if(err) { console.log('Error detected!! %s\n\n', article.link); return; }
+      if(art !== undefined) { 
+        console.log('Found! %s\n\n', article.link);
+        // add to db..
         
         // The main body of the page.
-        console.log(stripHTML(art.content));
+       
         
-        var fName = "/tmp/" + art.title + ".html";
-        fs.writeFile(fName, art.html, function(err) {
-          if(err) {
-                console.log(err);} 
-          else {}
-        });
+//        var fName = "/tmp/" + art.title + ".html";
+//         fs.writeFile(fName, art.html, function(err) {
+//           if(err) {
+//                 console.log(err);} 
+//           else {}
+//         });
         // The title of the page.
         //console.log(art.title);
 
@@ -87,13 +100,17 @@ parseArticle = function(article) {
         //console.log(meta);
       }
     });
-  } catch(ex) { console.log('parseArticle().. ex: %s', ex);} 
+  } catch(ex) { console.log('parseArticle().. exception detected!!\n\n');} 
 }
 
 function stripHTML(clean) {
   // Remove all remaining HTML tags.
+  if(!clean) {
+    console.log('stripHtml(): clean empty');
+    return;
+  }
+  
   clean = clean.replace(/<(?:.|\n)*?>/gm, "");
-
   // RegEx to remove needless newlines and whitespace.
   // See: http://stackoverflow.com/questions/816085/removing-redundant-line-breaks-with-regular-expressions
   clean = clean.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/ig, "\n");
@@ -104,5 +121,5 @@ function stripHTML(clean) {
 
 var timer = setTimeout(function() {
   console.log('timer fired..');
-  getTopTen();
+  getGoogleNews();
 }, 5000);
