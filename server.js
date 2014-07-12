@@ -14,7 +14,7 @@ var querystring = require('querystring');
 
 
 var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
-
+process.setMaxListeners(100);
 mongoose.connect(dbUri);
 
 mongoose.connection.on('connected', function () { console.log('connection successful..');   });
@@ -31,76 +31,49 @@ getGoogleNews = function() {
       if(err)  { console.log(err); }
       else {
         console.log('getGoogleNews(): found %d articles\n\n', articles.length);
-        
         for(var i=0; i<articles.length; i++) {
-          //processArticle(articles[i]);
           var components = URI.parse(articles[i].link);
           var query = querystring.parse(components.query);
-          console.log('%s\n\n', query.url );
+          articles[i].link = query.url;
+          processArticle(articles[i]);
         }
+        
+        //console.log('\n%s', JSON.stringify(articles[0], null, 2));
       }
   });
   } catch(ex) { console.log(ex); }
 }
 
 processArticle = function(article) {
-  //console.log('processArticle()..');
   try {
-    // test to see if link is in database..
-    // strip out url from google news ul..
-    
-    var deferred = q.defer();
     
     var query = News.findOne({'link' : article.link});
-    
     query.exec(function(err, result) {
-      //console.log('not in DB, adding "%s"', article.title);
-      parseArticle(article);
-//       console.log("\terror: %s", err);
-//       console.log("\tresult: %s", JSON.stringify(result, null, 2));
       if(err === null && result === null) { // add to db
-        deferred.resolve();
-      } else { // ignore
-        
+        read(article.link, function(err, art, meta) { 
+          if(art !== null && art !== undefined && err === null) {
+            
+            var n = News();
+            n.title     = art.title;
+            n.author    = article.author;
+            n.link      = article.link;
+            n.content   = stripHTML(art.content);
+            n.html      = art.content;
+            n.published = article.published;
+            n.document  = art.document;
+            n.words     = getWords(art.content);
+            n.feed      = article.feed;
+            n.save(function(err) {
+              if(err) { console.log('save failed..\n\t%s\n\terr: %s\n', art.title, err); }
+              else    { console.log('Article: %s SAVED!', art.title); }
+            });
+          } 
+        });
+      } else {
+        console.log('article: %s already in db..', article.link);
       }
-    });
-    return deferred.promise;
+    }); 
   } catch(ex) { console.log('processArticle() ex: ' + ex); }
-}
-
-parseArticle = function(article) {
-  try {
-    read(article.link, function(err, art, meta) {
-      //console.log('"%s"\n\tErr: %s\n\tArt: %s', article.title, err, art);
-      if(err) { console.log('Error detected!! %s\n\n', article.link); return; }
-      if(art !== undefined) { 
-        console.log('Found! %s\n\n', article.link);
-        // add to db..
-        
-        // The main body of the page.
-       
-        
-//        var fName = "/tmp/" + art.title + ".html";
-//         fs.writeFile(fName, art.html, function(err) {
-//           if(err) {
-//                 console.log(err);} 
-//           else {}
-//         });
-        // The title of the page.
-        //console.log(art.title);
-
-        // The raw HTML code of the page
-        //console.log(art.html);
-
-        // The document object of the page
-        //console.log(art.document);
-
-        // The response object from request lib
-
-        //console.log(meta);
-      }
-    });
-  } catch(ex) { console.log('parseArticle().. exception detected!!\n\n');} 
 }
 
 function stripHTML(clean) {
@@ -119,7 +92,24 @@ function stripHTML(clean) {
   return clean.trim();
 }
 
-var timer = setTimeout(function() {
-  console.log('timer fired..');
-  getGoogleNews();
-}, 5000);
+getWords = function(content) {
+  try {
+  var c = content.replace(/<img[^>]*>/g,"");
+  c = c.replace(/<iframe[^>]*>/g,"");
+  words = c.replace(/<\/?[^>]+(>|$)/g, "").split(" ");
+  var temp = [];
+  for(var i = 0; i<words.length; i++) { 
+    if(words[i] !== "")
+      i && temp.push(words[i].trim()); 
+  }
+  words = temp;
+  delete temp;
+  return words;
+  }catch(e) {console.log(e); return ['error'];}
+}
+
+getGoogleNews();
+// var timer = setTimeout(function() {
+//   console.log('timer fired..');
+//   getGoogleNews();
+// }, 5000);
