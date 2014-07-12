@@ -14,7 +14,7 @@ var querystring = require('querystring');
 
 
 var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
-process.setMaxListeners(100);
+
 mongoose.connect(dbUri);
 
 mongoose.connection.on('connected', function () { console.log('connection successful..');   });
@@ -22,12 +22,13 @@ mongoose.connection.on('error', function(err)   { console.log('connection error:
 
 console.log('connected to mongodb..');
 
-var News        = require('./app/models/news');
+var News        = require('../app/models/news');
 
 // here we can set the timer function..
 getGoogleNews = function() {
+  process.setMaxListeners(0);
   try {
-    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
+    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=-1&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
         console.log('getGoogleNews(): found %d articles\n\n', articles.length);
@@ -109,7 +110,8 @@ getWords = function(content) {
 }
 
 getGoogleNews();
-// var timer = setTimeout(function() {
-//   console.log('timer fired..');
-//   getGoogleNews();
-// }, 5000);
+
+var timer = setTimeout(function() {
+  console.log('timer fired..');
+  getGoogleNews();
+}, 300000);
