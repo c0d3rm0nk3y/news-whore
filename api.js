@@ -1,15 +1,10 @@
 // BASE setup..
 
 // Call the packages we need..
-var Boilerpipe  = require('boilerpipe');
-var read        = require('node-readability');
-var q           = require('q');
-var feed        = require('feed-read');
+var express     = require('express');
+var app         = express();
+var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
-var fs          = require('fs');
-var URI         = require('uri-js');
-var querystring = require('querystring');
-
 
 var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
 process.setMaxListeners(0);
@@ -20,7 +15,7 @@ mongoose.connection.on('error', function(err)   { console.log('connection error:
 
 console.log('connected to mongodb..');
 
-var News        = require('/app/models/news');
+var News        = require('./app/models/news');
 
 app.use(bodyParser());
 
@@ -28,7 +23,7 @@ var port = process.env.PORT || 8080;
 var router= express.Router();
 
 router.use(function(req, res, next) {
-  console.log("we've been hit by a ping captain.. something is happening..");
+  console.log("we've been hit by a ping captain.. something is happening..\n");
   next();
 });
 
@@ -54,6 +49,14 @@ router.route('/news')
 .post(function(req, res) { res.json({response: "not ready at this time..."}); })
 .get(function(req, res) {
   try {
-    res.json({response: "get news.."});
+    News.find().select('title words').exec(function(err, news) {
+      res.json(news);
+    });
+    //res.json({response: "get news.."});
   } catch(ex) { console.log('/news'); }
 });
+
+app.use('/api', router);
+// start the server..
+app.listen(port);
+console.log('all engines to full bairing ' + port + '.. ENGAGE\n\n');

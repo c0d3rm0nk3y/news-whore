@@ -23,6 +23,7 @@ mongoose.connection.on('error', function(err)   { console.log('connection error:
 console.log('connected to mongodb..');
 
 var News        = require('../app/models/news');
+var count = 0;
 
 // here we can set the timer function..
 getGoogleNews = function() {
@@ -32,6 +33,7 @@ getGoogleNews = function() {
       if(err)  { console.log(err); }
       else {
         console.log('getGoogleNews(): found %d articles\n\n', articles.length);
+        count = articles.length;
         for(var i=0; i<articles.length; i++) {
           var components = URI.parse(articles[i].link);
           var query = querystring.parse(components.query);
@@ -47,7 +49,7 @@ getGoogleNews = function() {
 
 processArticle = function(article) {
   try {
-    
+    //count--;
     var query = News.findOne({'link' : article.link});
     query.exec(function(err, result) {
       if(err === null && result === null) { // add to db
@@ -66,12 +68,12 @@ processArticle = function(article) {
             n.feed      = article.feed;
             n.save(function(err) {
               if(err) { console.log('save failed..\n\t%s\n\terr: %s\n', art.title, err); }
-              else    { console.log('Article: %s SAVED!', art.title); }
+              else    { console.log('%s SAVED! %d remaining', art.title, count--); }
             });
           } 
         });
       } else {
-        console.log('article: %s already in db..', article.link);
+        console.log('%s already in db.. %d remaining...', article.link, count--);
       }
     }); 
   } catch(ex) { console.log('processArticle() ex: ' + ex); }
