@@ -49,7 +49,7 @@ router.route('/news')
 .post(function(req, res) { res.json({response: "not ready at this time..."}); })
 .get(function(req, res) {
   try {
-    News.find().select('title words').exec(function(err, news) {
+    News.find().select('title published words').exec(function(err, news) {
       res.json(news);
     });
     //res.json({response: "get news.."});

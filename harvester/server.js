@@ -28,6 +28,15 @@ var count = 0;
 // here we can set the timer function..
 getGoogleNews = function() {
   process.setMaxListeners(0);
+  //d = Date.now();
+  // d is "Sun Oct 13 2013 20:32:01 GMT+0530 (India Standard Time)"
+  //datetext = d.toTimeString();
+  // datestring is "20:32:01 GMT+0530 (India Standard Time)"
+  // Split with ' ' and we get: ["20:32:01", "GMT+0530", "(India", "Standard", "Time)"]
+  // Take the first value from array :)
+  //datetext = datetext.split(' ')[0];
+  
+  //console.log('\nStarting pull @ %s\n\n', datetext);
   try {
     feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=-1&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
