@@ -54,7 +54,7 @@ router.route('/news')
     date.setDate(date.getDate() - 1);
     News
       .find( { published: {"$gte" :  date} } )
-      .select
+      .select('published title content words')
       .sort('published')
       .exec(function(err, news) { res.json(news);} );
     //res.json({response: "get news.."});

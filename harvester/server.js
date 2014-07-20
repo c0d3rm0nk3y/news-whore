@@ -17,8 +17,8 @@ var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/ne
 
 mongoose.connect(dbUri);
 
-mongoose.connection.on('connected', function () { console.log('connection successful..');   });
-mongoose.connection.on('error', function(err)   { console.log('connection error: %s', err); return;});
+mongoose.connection.on('connected', function ()   { console.log('connection successful..');   });
+mongoose.connection.on('error',     function(err) { console.log('connection error: %s', err); return;});
 
 console.log('connected to mongodb..');
 
@@ -28,6 +28,7 @@ var count = 0;
 // here we can set the timer function..
 getGoogleNews = function() {
   process.setMaxListeners(0);
+  console.log("\n\nRun Triggered at %s", new Date());
   //d = Date.now();
   // d is "Sun Oct 13 2013 20:32:01 GMT+0530 (India Standard Time)"
   //datetext = d.toTimeString();
@@ -41,7 +42,7 @@ getGoogleNews = function() {
     feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
-        console.log('getGoogleNews(): found %d articles\n\n', articles.length);
+        console.log('\ngetGoogleNews(): found %d articles\n\n', articles.length);
         count = articles.length;
         for(var i=0; i<articles.length; i++) {
           var components = URI.parse(articles[i].link);
@@ -82,7 +83,7 @@ processArticle = function(article) {
           } 
         });
       } else {
-        console.log('%s already in db.. %d remaining...', article.link, count--);
+        console.log('%s already in db.. %d remaining...', article.title.trim(), count--);
       }
     }); 
   } catch(ex) { console.log('processArticle() ex: ' + ex); }
@@ -120,9 +121,9 @@ getWords = function(content) {
   }catch(e) {console.log(e); return ['error'];}
 }
 
-getGoogleNews();
+//getGoogleNews();
 
-// var timer = setTimeout(function() {
-//   console.log('timer fired..');
-//   getGoogleNews();
-// }, 300000);
+var timer = setTimeout(function() {
+  console.log('timer fired..');
+  getGoogleNews();
+}, 300000);
