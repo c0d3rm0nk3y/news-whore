@@ -38,7 +38,7 @@ getGoogleNews = function() {
   
   //console.log('\nStarting pull @ %s\n\n', datetext);
   try {
-    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=-1&hl=en&topic=w&output=rss", function(err, articles) {
+    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
         console.log('getGoogleNews(): found %d articles\n\n', articles.length);
@@ -58,7 +58,7 @@ getGoogleNews = function() {
 
 processArticle = function(article) {
   try {
-    //count--;
+    
     var query = News.findOne({'link' : article.link});
     query.exec(function(err, result) {
       if(err === null && result === null) { // add to db
@@ -66,8 +66,8 @@ processArticle = function(article) {
           if(art !== null && art !== undefined && err === null) {
             
             var n = News();
-            n.title     = art.title;
-            n.author    = article.author;
+            n.title     = art.title.trim();
+            n.author    = article.author.trim();
             n.link      = article.link;
             n.content   = stripHTML(art.content);
             n.html      = art.content;
@@ -76,8 +76,8 @@ processArticle = function(article) {
             n.words     = getWords(art.content);
             n.feed      = article.feed;
             n.save(function(err) {
-              if(err) { console.log('save failed..\n\t%s\n\terr: %s\n', art.title, err); }
-              else    { console.log('%s SAVED! %d remaining', art.title, count--); }
+              if(err) { console.log('save failed..\n\t%s\n\terr: %s\n', art.title.trim(), err); }
+              else    { console.log('%s SAVED! %d remaining', art.title.trim(), count--); }
             });
           } 
         });
@@ -111,7 +111,7 @@ getWords = function(content) {
   words = c.replace(/<\/?[^>]+(>|$)/g, "").split(" ");
   var temp = [];
   for(var i = 0; i<words.length; i++) { 
-    if(words[i] !== "")
+    if(words[i].trim() !== "")
       i && temp.push(words[i].trim()); 
   }
   words = temp;
@@ -122,7 +122,7 @@ getWords = function(content) {
 
 getGoogleNews();
 
-var timer = setTimeout(function() {
-  console.log('timer fired..');
-  getGoogleNews();
-}, 300000);
+// var timer = setTimeout(function() {
+//   console.log('timer fired..');
+//   getGoogleNews();
+// }, 300000);

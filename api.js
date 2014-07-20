@@ -48,10 +48,15 @@ router.get('/', function(req, res) {
 router.route('/news')
 .post(function(req, res) { res.json({response: "not ready at this time..."}); })
 .get(function(req, res) {
+  // .find( { published: {"$gte" : date, "$lt" : new Date()} } )
   try {
-    News.find().select('title published words').exec(function(err, news) {
-      res.json(news);
-    });
+    var date = new Date();
+    date.setDate(date.getDate() - 1);
+    News
+      .find( { published: {"$gte" :  date} } )
+      .select
+      .sort('published')
+      .exec(function(err, news) { res.json(news);} );
     //res.json({response: "get news.."});
   } catch(ex) { console.log('/news'); }
 });
