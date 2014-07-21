@@ -39,7 +39,7 @@ getGoogleNews = function() {
   
   //console.log('\nStarting pull @ %s\n\n', datetext);
   try {
-    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
+    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=15&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
         console.log('\ngetGoogleNews(): found %d articles\n\n', articles.length);

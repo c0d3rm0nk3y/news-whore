@@ -10,6 +10,7 @@
     "node-readability" : "*",
     "uri-js"           : "*",
     "q"                : "*",
-    "feedparser"       : "*"
+    "feedparser"       : "*",
+    "node-schedule"    : "*"
 	}
 }
