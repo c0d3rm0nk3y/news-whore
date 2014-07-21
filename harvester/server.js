@@ -121,9 +121,9 @@ getWords = function(content) {
   }catch(e) {console.log(e); return ['error'];}
 }
 
-//getGoogleNews();
+getGoogleNews();
 
-var timer = setTimeout(function() {
-  console.log('timer fired..');
-  getGoogleNews();
-}, 300000);
+// var timer = setTimeout(function() {
+//   console.log('timer fired..');
+//   getGoogleNews();
+// }, 300000);
