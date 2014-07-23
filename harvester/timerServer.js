@@ -6,9 +6,27 @@ var mongoose    = require('mongoose');
 var URI         = require('uri-js');
 var querystring = require('querystring');
 
-getGoogleNews = function () {
+var dbUri = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
+
+mongoose.connect(dbUri);
+mongoose.connection.on('connected', function ()   { console.log('connection successful..');   });
+mongoose.connection.on('error',     function(err) { console.log('connection error: %s', err); return;});
+//console.log('connected to mongodb..');
+
+processGoogleNews = function() {
   try {
     
+    
+  } catch(ex) { console.log('processGoogleNews') }
+}
+
+getGoogleNews = function () {
+  try {
+    var d = q.deffered();
+    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
+      d.resolve(articles);
+    });
+    return d.promise;
   } catch(ex) { console.log('getGoogleNews() ex: %s', ex); }
 }
 
