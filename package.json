@@ -11,6 +11,7 @@
     "uri-js"           : "*",
     "q"                : "*",
     "feedparser"       : "*",
-    "node-schedule"    : "*"
+    "node-schedule"    : "*",
+    "timer-jobs"       : "*"
 	}
 }
