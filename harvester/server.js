@@ -4,6 +4,7 @@
 
 // Call the packages we need..
 var Boilerpipe  = require('boilerpipe');
+var TimerJob = require('timer-jobs');
 var read        = require('node-readability');
 var q           = require('q');
 var feed        = require('feed-read');
@@ -123,7 +124,10 @@ getWords = function(content) {
 
 getGoogleNews();
 
-// var timer = setTimeout(function() {
-//   console.log('timer fired..');
-//   getGoogleNews();
-// }, 300000);
+var someTimer = new TimerJob({interval: 600000}, function(done) {
+  console.log("timer fired (10 min) @ %s.. ", new Date());
+  getGoogleNews();
+  done();
+});
+
+someTimer.start();
