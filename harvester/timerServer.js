@@ -45,27 +45,29 @@ processArticles = function(articles) {
   try {
     var index = 0;
     articles.forEach(function(article) {
+      // here is where you need to resolve the 
+      // link
       
         //console.log(new Date() + ': setTimeout() fired for new..');
-        isInDB(article.link).then(function(result) {
-          setTimeout(function() {
-            console.log('isInDb().result: %s', result);
-            if(!result) {
-              console.log('NEW! %s, proceeding..', article.title.trim());
-              readabilify(article).then(
-                function(art) {
-                  saveToDB(art,article).then(
-                    function(result) { console.log(result); }, 
-                    function(err) { console.log(err); });
-                }, 
-                function(err) {
-                  console.log('readabilityError: %s', err);
-                });
-            } else {
-              console.log('STALE! %s, ignored..', article.title.trim());
-            }
-          },5000);
-        });
+      isInDB(article.link).then(function(result) {
+        setTimeout(function() {
+          console.log('isInDb().result: %s', result);
+          if(!result) {
+            console.log('NEW! %s, proceeding..', article.title.trim());
+            readabilify(article).then(
+              function(art) {
+                saveToDB(art,article).then(
+                  function(result) { console.log(result); }, 
+                  function(err) { console.log(err); });
+              }, 
+              function(err) {
+                console.log('readabilityError: %s', err);
+              });
+          } else {
+            console.log('STALE! %s, ignored..', article.title.trim());
+          }
+        },5000);
+      });
         
       
     });  
@@ -169,4 +171,4 @@ var someTimer = new TimerJob({interval: 900000}, function(done) {
 console.log(new Date());
 someTimer.start();
 
-processGoogleNews();
+//processGoogleNews();
