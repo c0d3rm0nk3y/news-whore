@@ -23,14 +23,28 @@ processGoogleNews = function() {
   try {
     getGoogleNews()
       .then(function(articles) {
-        processArticles(articles);
+        var arts = correctLinks(articles);
+        processArticles(arts);
     });
-    
+    return;
   } catch(ex) { console.log('processGoogleNews') }
 }
 
+correctLinks = function(articles) {
+  try {
+    console.log('correctLinks()..');
+    for(var i =0; i<articles.length; i++) {
+      var components = URI.parse(articles[i].link);
+      var qu = querystring.parse(components.query);
+      articles[i].link = qu.url;
+      //console.log(qu.url);
+    }
+    return articles;
+  } catch(ex) { console.log('correctLinks() ex: %s', ex); }
+}
+
 getGoogleNews = function () {
-  //console.log('getGoogleNews()..');
+  console.log('getGoogleNews()..');
   try {
     var d = q.defer();
     feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
@@ -41,7 +55,7 @@ getGoogleNews = function () {
 }
 
 processArticles = function(articles) {
-  //console.log('processArticles()..');
+  console.log('processArticles()..');
   try {
     var index = 0;
     articles.forEach(function(article) {
@@ -50,10 +64,11 @@ processArticles = function(articles) {
       
         //console.log(new Date() + ': setTimeout() fired for new..');
       isInDB(article.link).then(function(result) {
+        
         setTimeout(function() {
-          console.log('isInDb().result: %s', result);
+          //console.log('isInDb().result: %s', result);
           if(!result) {
-            console.log('NEW! %s, proceeding..', article.title.trim());
+            //console.log('NEW! %s, proceeding..', article.title.trim());
             readabilify(article).then(
               function(art) {
                 saveToDB(art,article).then(
@@ -66,6 +81,7 @@ processArticles = function(articles) {
           } else {
             console.log('STALE! %s, ignored..', article.title.trim());
           }
+        
         },5000);
       });
         
@@ -95,12 +111,11 @@ saveToDB = function(art, article) {
   //console.log('saveToDB()..');
   try {
     var d = q.defer();
-    var components = URI.parse(link);
-    var qu = querystring.parse(components.query);
+    
     var n = News();
             n.title     = art.title.trim();
             n.author    = article.author.trim();
-            n.link      = qu.url;
+            n.link      = article.link;
             n.content   = stripHTML(art.content);
             n.html      = art.content;
             n.published = article.published;
@@ -118,17 +133,17 @@ saveToDB = function(art, article) {
 isInDB = function(link) {
   //console.log('isInDB()..');
   try {
-    var components = URI.parse(link);
-    var qu = querystring.parse(components.query);
+    //var components = URI.parse(link);
+    //var qu = querystring.parse(components.query);
     //articles[i].link = query.url;
     //console.log('testing link: %s', qu.url);
     var d = q.defer();
-    var query = News.findOne({'link' : qu.url});
+    var query = News.findOne({'link' : link});
     query.exec(function(err, result) {
       if(err === null && result === null) { // add to db
         d.resolve(false);
       } else {
-        console.log('in db..');  
+        //console.log('in db..');  
         d.resolve(true);
       }
     });
@@ -162,7 +177,7 @@ getWords = function(content) {
   }catch(e) {console.log(e); return ['error'];}
 }
 
-var someTimer = new TimerJob({interval: 900000}, function(done) {
+var someTimer = new TimerJob({interval: 600000}, function(done) {
   console.log(new Date());
   processGoogleNews();
   done();
@@ -171,4 +186,4 @@ var someTimer = new TimerJob({interval: 900000}, function(done) {
 console.log(new Date());
 someTimer.start();
 
-//processGoogleNews();
+processGoogleNews();

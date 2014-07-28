@@ -40,7 +40,7 @@ getGoogleNews = function() {
   
   //console.log('\nStarting pull @ %s\n\n', datetext);
   try {
-    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=15&hl=en&topic=w&output=rss", function(err, articles) {
+    feed("https://news.google.com/news/feeds?pz=1&cf=i&ned=us&num=100&hl=en&topic=w&output=rss", function(err, articles) {
       if(err)  { console.log(err); }
       else {
         console.log('\ngetGoogleNews(): found %d articles\n\n', articles.length);
@@ -79,7 +79,7 @@ processArticle = function(article) {
             n.feed      = article.feed;
             n.save(function(err) {
               if(err) { console.log('save failed..\n\t%s\n\terr: %s\n', art.title.trim(), err); }
-              else    { console.log('%s SAVED! %d remaining', art.title.trim(), count--); }
+              else    { console.log('%s SAVED!', art.title.trim()); }
             });
           } 
         });
