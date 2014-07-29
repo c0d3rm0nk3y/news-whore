@@ -18,6 +18,8 @@ mongoose.connection.on('error',     function(err) { console.log('connection erro
 */
 
 processGoogleNews = function() {
+  console.log('\033[2J');
+  console.log(new Date());
   console.log('\n\n\nprocessGoogleNews()..');
   
   try {
@@ -178,7 +180,7 @@ getWords = function(content) {
 }
 
 var someTimer = new TimerJob({interval: 600000}, function(done) {
-  console.log(new Date());
+  
   processGoogleNews();
   done();
 });
