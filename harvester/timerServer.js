@@ -126,7 +126,7 @@ saveToDB = function(art, article) {
             n.feed      = article.feed;
     n.save(function(err) {
       if(err) {  d.reject(err); }
-      else    { d.resolve(art.title.trim() + ' SAVED!'); }
+      else    { d.resolve("FRESH! " + art.title.trim() + ' SAVED!'); }
     });
     return d.promise;
   } catch(ex) { console.log('saveToDB() ex: %s', ex);  }
