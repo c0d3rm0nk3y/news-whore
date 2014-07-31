@@ -26,7 +26,7 @@ processGoogleNews = function() {
     getGoogleNews()
       .then(function(articles) {
         var arts = correctLinks(articles);
-        processArticles(arts);
+        startProcessing(arts);
     });
     return;
   } catch(ex) { console.log('processGoogleNews') }
@@ -54,6 +54,32 @@ getGoogleNews = function () {
     });
     return d.promise;
   } catch(ex) { console.log('getGoogleNews() ex: %s', ex); }
+}
+
+startProcessing = function(articles) {
+  try {
+    articles.forEach(function(article) {
+      setTimeout(function() {
+        isInDB(article.link).then(function(result) {
+          //console.log('isInDb().result: %s', result);
+          if(!result) {
+            //console.log('NEW! %s, proceeding..', article.title.trim());
+            readabilify(article).then(
+              function(art) {
+                saveToDB(art,article).then(
+                  function(result) { console.log(result); }, 
+                  function(err) { console.log(err); });
+              }, 
+              function(err) {
+                console.log('readabilityError: %s', err);
+              });
+          } else {
+            console.log('STALE! %s, ignored..', article.title.trim());
+          }        
+        });
+      }, 10000);
+    });
+  } catch(ex)  { console.log('startProcessing().. ex: %s', ex); }
 }
 
 processArticles = function(articles) {
