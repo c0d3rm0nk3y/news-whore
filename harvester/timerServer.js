@@ -59,9 +59,12 @@ getGoogleNews = function () {
 startProcessing = function(articles) {
   try {
     articles.forEach(function(article) {
-      setTimeout(function() {
-        processArt(article);
-      }, 15000);
+      processArt(article);
+//       setTimeout(function() {
+//         //console.log(new Date());
+//         // this doesn't work.. doesn't slow it down.. 
+//         processArt(article);
+//       }, 15000);
     });
   } catch(ex)  { console.log('startProcessing().. ex: %s', ex); }
 }
@@ -104,6 +107,7 @@ processArticles = function(articles) {
           if(!result) {
             //console.log('NEW! %s, proceeding..', article.title.trim());
             readabilify(article).then(
+              // if "title":"Request Timeout" ignore..
               function(art) {
                 saveToDB(art,article).then(
                   function(result) { console.log(result); }, 
@@ -130,6 +134,7 @@ readabilify = function(article) {
     var d = q.defer();
     
     read(article.link, function(err, art, meta) { 
+      // test "title":"Request Timeout" 
       if(art !== null && art !== undefined && err === null) {
         d.resolve(art);
       } else {
@@ -211,7 +216,7 @@ getWords = function(content) {
   }catch(e) {console.log(e); return ['error'];}
 }
 
-var someTimer = new TimerJob({interval: 600000}, function(done) {
+var someTimer = new TimerJob({interval: 900000}, function(done) {
   
   processGoogleNews();
   done();
