@@ -1,17 +1,20 @@
 {
-	"name": "news-api",
-	"main": "server.js",
-	"dependencies": {
-		"express"          : "~4.0.0",
-		"mongoose"         : "~3.6.13",
-		"body-parser"      : "~1.0.1",
-    "boilerpipe"       : "*",
-    "feed-read"        : "*",
-    "node-readability" : "*",
-    "uri-js"           : "*",
-    "q"                : "*",
-    "feedparser"       : "*",
-    "node-schedule"    : "*",
-    "timer-jobs"       : "*"
-	}
+  "name": "news-api",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "~1.0.1",
+    "boilerpipe": "*",
+    "express": "~4.0.0",
+    "feed-read": "*",
+    "feedparser": "*",
+    "mongoose": "~3.6.13",
+    "node-readability": "*",
+    "node-schedule": "*",
+    "passport": "^0.2.0",
+    "passport-http": "^0.2.2",
+    "q": "*",
+    "timer-jobs": "*",
+    "uri-js": "*"
+  }
 }

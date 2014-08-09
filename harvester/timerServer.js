@@ -7,6 +7,8 @@ var URI         = require('uri-js');
 var querystring = require('querystring');
 var News        = require('../app/models/news');
 var dbUri       = 'mongodb://datawhore:badCodeMonkey01!@ds027799.mongolab.com:27799/news';
+var Entities    = require('html-entities').AllHtmlEntities;
+entities = new Entities();
 mongoose.connect(dbUri);
 mongoose.connection.on('connected', function ()   { console.log('connection successful..');   });
 mongoose.connection.on('error',     function(err) { console.log('connection error: %s', err); return;});
@@ -150,7 +152,7 @@ saveToDB = function(art, article) {
   //console.log('saveToDB()..');
   try {
     var d = q.defer();
-    
+    art.content = entities.decode(art.content);
     var n = News();
             n.title     = art.title.trim();
             n.author    = article.author.trim();

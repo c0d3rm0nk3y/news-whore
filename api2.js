@@ -4,6 +4,7 @@
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
+
 var newsController = require('./controllers/news');
 var userController = require('./controllers/user');
 var port = process.env.PORT || 8080;
@@ -13,6 +14,11 @@ mongoose.connect(dbUri);
 mongoose.connection.on('connected', function () { console.log('connection successful..');   });
 mongoose.connection.on('error', function(err)   { console.log('connection error: %s', err); return;});
 
+// need to come up with a scrubber routine to cleanup the html entities.. 
+
+// start with adding update to the api.. then loop through and if detecting an entity, work to replace it and update the
+// db..
+
 var app         = express();
 app.use(bodyParser());
 
@@ -20,6 +26,8 @@ var router= express.Router();
 
 router.use(function(req, res, next) {
   console.log("we've been hit by a ping captain.. something is happening..\n");
+  // log each request to the console
+	console.log("%s %s" ,req.method, req.url);
   next();
 });
 

@@ -15,10 +15,16 @@ exports.getNews = function(req, res) {
 };
 
 exports.getToday = function(req, res) {
+  //todaysnews?p=title+words
+  var s = req.query.view;
+  console.log('exports.getToday %s', s);
+  
+  if(s === '') select = 'title published content';
+  
   var d = new Date();
   d.setHours(0,0,0,0);
   News.find( { published: {"$gte" :  d} } )
-      .select('title')
+  .select(s)
       .sort('published')
       .exec(function(err, news) { 
         res.json(news);
