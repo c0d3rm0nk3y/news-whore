@@ -1,0 +1,18 @@
+{
+  "name": "",
+  "version" : "2.1",
+  "description": "",
+  "icons" : { 
+    "128" : "128.png"
+  },
+  "background": {
+    "persistent" : true,
+    "scripts" : ["background.js"]
+  },
+  "permissions": [],
+  "browser_action" : {
+    "default_title" : "",
+    "default_icon" : "",
+    "default_popup" : "popup.html"
+  }
+}
