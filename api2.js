@@ -45,6 +45,10 @@ app.all('/*', function(req, res, next) {
 router.route('/news')
   .post(newsController.postNews)
   .get(newsController.getNews);
+    
+router.route('/news/:news_id')
+  .get(newsController.getNew)
+  .put(newsController.putNew);
 
 router.route('/todaysnews')
   .get(newsController.getToday);
