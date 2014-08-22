@@ -20,5 +20,4 @@ function processN() {
   console.log('processN../n%s', req.responseText);
   var res = JSON.parse(req.responseText);
   articles = res.concat(articles);
-  
 }
