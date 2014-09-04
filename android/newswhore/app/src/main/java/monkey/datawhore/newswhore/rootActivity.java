@@ -2,6 +2,9 @@ package monkey.datawhore.newswhore;
 
 import android.app.Activity;
 import android.os.Bundle;
+
+import android.os.Message;
+import android.util.JsonReader;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class rootActivity extends Activity {
@@ -59,6 +64,68 @@ private static JSONObject jObj = null;
   }
 
   private static String url = "http://monkey-nodejs-71725.usw1.nitrousbox.com:8080/api/todaysnews?view=title+words+link&count=10";
+
+  private List readJsonStream(InputStream in) throws IOException {
+    JsonReader reader = new JsonReader(new InputStreamReader(in));
+    try {
+      return readMessagesArray(reader);
+    } finally {
+        reader.close();
+    }
+  }
+
+  private List readMessagesArray(JsonReader reader) throws IOException {
+    List messages = new ArrayList();
+
+    reader.beginArray();
+    while(reader.hasNext()) {
+      messages.add(readMessage(reader));
+    }
+    reader.endArray();;
+    return messages;
+  }
+
+  private boolean  readMessage(JsonReader reader) throws IOException {
+    // vars for each
+    // sense this is the root activity the three things will be included
+    // String title, String id, and String[] words
+    String title = null;
+    String id = null;
+    String link = null;
+    List words = null;
+
+    reader.beginObject();
+    while(reader.hasNext()) {
+      String name = reader.nextName();
+      if(name.equals("title")) {
+        title = reader.nextString();
+      } else if(name.equals("_id")) {
+        id = reader.nextString();
+      } else if(name.equals("link")) {
+        link  = reader.nextString();
+      } else if(name.equals("words")) {
+        words = readStringArray(reader);
+      } else {
+        reader.skipValue();
+      }
+    }
+    reader.endObject();
+
+    return true;
+  }
+
+  private List readStringArray(JsonReader reader) throws IOException {
+    List words = new ArrayList();
+
+    reader.beginArray();
+    while(reader.hasNext()) {
+      words.add(reader.nextString());
+    }
+    reader.endArray();
+
+    return words;
+  }
+
 
   private void refreshContent() {
     InputStream is = null;
