@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.*;
 
 
 public class rootActivity extends Activity {
@@ -64,7 +65,38 @@ private static JSONObject jObj = null;
   }
 
   private static String url = "http://monkey-nodejs-71725.usw1.nitrousbox.com:8080/api/todaysnews?view=title+words+link&count=10";
+	private static String TAG = "MONKEYTAG";
+	
+	private void refreshContent() {
+    InputStream is = null;
+    String json = null;
+    try {
+      DefaultHttpClient client = new DefaultHttpClient();
+      HttpPost post = new HttpPost(url);
+      HttpResponse response = client.execute(post);
+      HttpEntity entity = response.getEntity();
+      is = entity.getContent();
+    } catch(UnsupportedEncodingException e) { e.printStackTrace();
+    } catch(ClientProtocolException e) { e.printStackTrace();
+    } catch(IOException e) { e.printStackTrace(); }
 
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+      StringBuilder sb = new StringBuilder();
+      String line = null;
+      while((line = reader.readLine()) != null) {
+        sb.append(line + "n");
+      }
+      is.close();
+      json = sb.toString();
+			Log.e("Results", sb.toString());
+    } catch(Exception e) { e.printStackTrace(); }
+
+    try {
+      jObj = new JSONObject(json);
+    } catch (JSONException e) { e.printStackTrace(); }
+  }
+	
   private List readJsonStream(InputStream in) throws IOException {
     JsonReader reader = new JsonReader(new InputStreamReader(in));
     try {
@@ -81,7 +113,7 @@ private static JSONObject jObj = null;
     while(reader.hasNext()) {
       messages.add(readMessage(reader));
     }
-    reader.endArray();;
+    reader.endArray();
     return messages;
   }
 
@@ -127,35 +159,7 @@ private static JSONObject jObj = null;
   }
 
 
-  private void refreshContent() {
-    InputStream is = null;
-    String json = null;
-    try {
-
-      DefaultHttpClient client = new DefaultHttpClient();
-      HttpPost post = new HttpPost(url);
-      HttpResponse response = client.execute(post);
-      HttpEntity entity = response.getEntity();
-      is = entity.getContent();
-    } catch(UnsupportedEncodingException e) { e.printStackTrace();
-    } catch(ClientProtocolException e) { e.printStackTrace();
-    } catch(IOException e) { e.printStackTrace(); }
-
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
-      StringBuilder sb = new StringBuilder();
-      String line = null;
-      while((line = reader.readLine()) != null) {
-        sb.append(line + "n");
-      }
-      is.close();
-      json = sb.toString();
-    } catch(Exception e) { e.printStackTrace(); }
-
-    try {
-      jObj = new JSONObject(json);
-    } catch (JSONException e) { e.printStackTrace(); }
-  }
+  
 
   private void openSettings() {
 
