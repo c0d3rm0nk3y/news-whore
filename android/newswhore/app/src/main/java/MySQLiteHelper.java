@@ -3,13 +3,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by User on 9/4/2014.
  */
 public class MySQLiteHelper extends SQLiteOpenHelper {
-  // based on tut' found here.. http://hmkcode.com/android-simple-sqlite-database-tutorial/
+  // based on tut' found here.. the e
   private static final int DATABASE_VERSION = 1;
   private static final String DATABASE_NAME = "NWDB";
 
@@ -20,7 +21,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     // create the db table
-    String CREATE_NEWS_TABLE = "CREATE TABLE news ( id TEXT PRIMARY KEY, title TEXT, published DATE, content TEXT)";
+    String CREATE_NEWS_TABLE = "CREATE TABLE news ( id TEXT PRIMARY KEY, title TEXT, published DATE, link TEXT, content TEXT)";
 
     db.execSQL(CREATE_NEWS_TABLE);
   }
@@ -40,20 +41,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
   private static final String KEY_TITLE = "title";
   private static final String KEY_PUBLISHED = "published";
   private static final String KEY_CONTENT = "content";
+  private static final String KEY_LINK = "link";
 
-  private static final String[] COLUMNS = {KEY_ID, KEY_TITLE, KEY_PUBLISHED, KEY_CONTENT};
+  private static final String[] COLUMNS = {KEY_ID, KEY_TITLE, KEY_PUBLISHED, KEY_LINK, KEY_CONTENT};
 
   public void addNews(News news) {
 
 
   }
 
-  public News getNews(String id) {}
+  public News getNews(String id) { return new News(); }
 
-  public List<News> getAllNews() {
+  public List<News> getAllNews() {  return new ArrayList<News>(); }
 
-
-  }
-
-  public int markRead(News news) {}
+  public int markRead(News news) { return 1; }
 }

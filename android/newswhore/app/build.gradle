@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "monkey.datawhore.newswhore"
         targetSdkVersion 19
-        minSdkVersion 19
+        minSdkVersion 18
         versionCode 1
         versionName "1.0"
     }
