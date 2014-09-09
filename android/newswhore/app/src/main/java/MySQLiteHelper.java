@@ -31,6 +31,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     db.execSQL("DROP TABLE IF EXISTS news");
     // create fresh
     this.onCreate(db);
+
+    
   }
 
   // news table name
