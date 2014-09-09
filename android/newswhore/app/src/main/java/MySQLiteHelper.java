@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.*;
 
 /**
  * Created by User on 9/4/2014.
@@ -48,12 +49,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
   }
 
-  public News getNews(String id) {}
+  public News getNews(String id) {
+	  return new News();
+  }
 
   public List<News> getAllNews() {
-
+	return new ArrayList();
 
   }
 
-  public int markRead(News news) {}
+  public int markRead(News news) {return 1;}
 }
