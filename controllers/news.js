@@ -84,8 +84,27 @@ exports.getNew = function(req, res) {
   });
 };
 
-exports.putNew = function(req, res) {
-  
+exports.toggleRead = function(req, res) {
+  News.findById(req.params.news_id, function(err, news) {
+    if(err) res.send(err);
+    
+    news.isRead = !news.isRead;
+    
+    news.save(function(err) {
+      if(err) res.json(err);
+      
+      res.json({message: "toggled successfully"}); 
+    });
+    // figure out what to update.
+  });
+};
+
+exports.deleteNews = function(req, res) {
+  News.findByIdAndRemove(req.params.news_id, function(err) {
+    if(err) res.send(err);
+    
+    res.json({message: "article removed"});
+  });
 };
 
 exports.getToday = function(req, res) {
@@ -95,7 +114,7 @@ exports.getToday = function(req, res) {
   console.log('count: %s', c);
   console.log('exports.getToday %s', s);
   if(c === '') c = 100;
-  if(s === '') select = 'title published content';
+  if(s === '') select = 'title published content submitted';
   
   var d = new Date();
   d.setHours(0,0,0,0);

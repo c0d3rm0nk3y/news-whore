@@ -162,6 +162,7 @@ saveToDB = function(art, article) {
             n.published = article.published;
             n.document  = art.document;
             n.words     = getWords(art.content);
+            n.submitted = false;
             n.feed      = article.feed;
     n.save(function(err) {
       if(err) {  d.reject(err); }

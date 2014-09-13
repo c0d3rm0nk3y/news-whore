@@ -9,6 +9,7 @@ var NewsSchema    = new Schema({
   link        : String,
   content     : String,
   html        : String,
+  isRead      : { type: Boolean, default : false },
   published   : Date,
   document    : String,
   words       :  [],

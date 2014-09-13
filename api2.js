@@ -1,5 +1,22 @@
 // BASE setup..
 
+
+/*
+db.your_collection.update({},
+                          {$set : {"new_field":1}},
+                          {upsert:false,
+                          multi:true}) 
+                          
+db.inventory.update(
+   { category: "clothing" },
+   {
+     $set: { category: "apparel" },
+     $currentDate: { lastModified: true }
+   },
+   { multi: true }
+)
+*/
+
 // Call the packages we need..
 var express     = require('express');
 var bodyParser  = require('body-parser');
@@ -48,7 +65,7 @@ router.route('/news')
     
 router.route('/news/:news_id')
   .get(newsController.getNew)
-  .put(newsController.putNew);
+  .put(newsController.toggleRead);
 
 router.route('/todaysnews')
   .get(newsController.getToday);
