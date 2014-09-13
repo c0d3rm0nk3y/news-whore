@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         applicationId "monkey.datawhore.newswhore"
-        minSdkVersion 19
         targetSdkVersion 19
+        minSdkVersion 18
         versionCode 1
         versionName "1.0"
     }
@@ -17,8 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+  compileOptions {
+  }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile fileTree(dir: 'libs', include: ['*.jar'])
 }
