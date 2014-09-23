@@ -29,6 +29,9 @@ window.onload = function() {
     });
     
   }
+  document.getElementById('login').onclick = function() {
+    console.log('login clicked..');
+  }
 }
 
 function processN() {
