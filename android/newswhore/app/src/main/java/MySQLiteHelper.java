@@ -3,6 +3,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // create fresh
     this.onCreate(db);
 
-    
+
   }
 
   // news table name
@@ -45,17 +46,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
   private static final String[] COLUMNS = {KEY_ID, KEY_TITLE, KEY_PUBLISHED, KEY_CONTENT};
 
-  public void addNews(News news) {
+  public void addNews(News news) {}
 
+  public News getNews(String id) { return new News(); }
 
-  }
+  public List<News> getAllNews() { return new ArrayList(); }
 
-  public News getNews(String id) {}
-
-  public List<News> getAllNews() {
-
-
-  }
-
-  public int markRead(News news) {}
+  public int markRead(News news) { return 1; }
 }

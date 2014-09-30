@@ -1,6 +1,18 @@
 package monkey.datawhore.newswhore;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 
 import android.os.Message;
@@ -26,12 +38,26 @@ import java.util.List;
 import android.util.*;
 
 
-public class rootActivity extends Activity {
-private static JSONObject jObj = null;
+public class rootActivity extends Activity implements ConnectionCallbacks,
+                                                      OnConnectionFailedListener  {
+  private static JSONObject jObj = null;
+  private boolean mSignInClicked;
+  private static final int RC_SIGN_IN = 0;
+  private GoogleApiClient mGoogleApiClient;
+  private boolean mIntentInProgress;
+  private ConnectionResult mConnectionResult;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_root);
+
+    mGoogleApiClient = new GoogleApiClient.Builder(this)
+      .addConnectionCallbacks(this)
+      .addOnConnectionFailedListener(this)
+      .addApi(Plus.API)
+      .addScope(Plus.SCOPE_PLUS_LOGIN)
+      .build();
   }
 
 
@@ -59,6 +85,9 @@ private static JSONObject jObj = null;
     case R.id.action_refresh:
       refreshContent();
       return true;
+    case R.id.action_login:
+
+      return true;
     default:
       return super.onOptionsItemSelected(item);
     }
@@ -68,9 +97,11 @@ private static JSONObject jObj = null;
 	private static String TAG = "MONKEYTAG";
 	
 	private void refreshContent() {
+    Log.e(TAG,"refreshContent()..");
     InputStream is = null;
     String json = null;
     try {
+      Log.e(TAG,"Attempting DefaultHttpClient...");
       DefaultHttpClient client = new DefaultHttpClient();
       HttpPost post = new HttpPost(url);
       HttpResponse response = client.execute(post);
@@ -158,10 +189,68 @@ private static JSONObject jObj = null;
     return words;
   }
 
+  private void openSettings() { }
 
-  
+  protected void onStart() {
+    super.onStart();
+    mGoogleApiClient.connect();
+  }
 
-  private void openSettings() {
+  protected void onStop() {
+    super.onStop();
 
+    if(mGoogleApiClient.isConnected()) {
+      mGoogleApiClient.disconnect();
+    }
+  }
+
+  @Override
+  public void onConnected(Bundle bundle) {
+    // We've resolved any connection errors.  mGoogleApiClient can be used to
+    // access Google APIs on behalf the user.
+
+    /**
+     *  get username..
+     *  **/
+     Log.i("MONKEYTAG", "onConnected..");
+     // update the ui to reflect..
+
+    Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+
+    Log.i("MONKEYTAG", "current user: " + currentUser.getDisplayName());
+
+
+  }
+
+
+
+  @Override
+  public void onConnectionFailed(ConnectionResult result) {
+    if(!mIntentInProgress && result.hasResolution()) {
+      try {
+        mIntentInProgress = true;
+        startIntentSenderForResult(result.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
+      } catch (IntentSender.SendIntentException e) {
+        // The intent was canceled before it was sent.  Return to the default
+        // state and attempt to connect to get an update ConnectionResult
+        mIntentInProgress = false;
+        mGoogleApiClient.connect();
+      }
+    }
+  }
+
+
+  public void onConnectionSuspended(int cause) {
+    mGoogleApiClient.connect();;
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+    if(requestCode == RC_SIGN_IN) {
+      mIntentInProgress = false;
+      if(!mGoogleApiClient.isConnecting()) {
+        mGoogleApiClient.connect();
+      }
+    }
   }
 }
