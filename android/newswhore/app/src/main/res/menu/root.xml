@@ -3,7 +3,8 @@
   tools:context=".rootActivity" >
   <item android:id="@+id/action_login"
         android:title="Sign In"/>
-
+  <item android:id="@+id/getToken"
+        android:title="Get Token"/>
   <item android:id="@+id/action_settings"
     android:title="@string/action_settings"
     android:orderInCategory="100"
