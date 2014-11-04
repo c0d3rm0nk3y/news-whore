@@ -1,2 +1,2 @@
-chrome.browserAction.setBadgeText({text: "yeah"});
+chrome.browserAction.setBadgeText({text: "moo"});
 

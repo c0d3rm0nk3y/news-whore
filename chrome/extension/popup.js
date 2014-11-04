@@ -3,13 +3,16 @@ var articles;
 var url = 'http://monkey-nodejs-71725.usw1.nitrousbox.com:8080/api/todaysnews?view=title&count=3';
 
 window.onload = function() {
+  console.log('on load..');
   document.getElementById('button').onclick = function() {
+    console.log('button clicked..');
     chrome.tabs.getSelected(null,function(tab) {
+      console.log('linked clicked: %s', tab.url);
       var tabLink = tab.url;
       var postdata = "link="+tab.url;
       console.log(postdata);
-      //console.log('linked clicked: %s', tab.url);
-      
+
+
       req = new XMLHttpRequest();
       req.open('POST', "http://monkey-nodejs-71725.usw1.nitrousbox.com:8080/api/news/", true);
       req.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -27,7 +30,7 @@ window.onload = function() {
       };
       req.send(postdata);
     });
-    
+
   }
   document.getElementById('login').onclick = function() {
     console.log('login clicked..');
@@ -36,7 +39,7 @@ window.onload = function() {
 
 function processN() {
   console.log('processN, readyState: %s/nstatus: %s/nresponse: %s', req.readyState, req.status, req.response);
-  
+
 }
 
 // var xhr = new XMLHttpRequest();
