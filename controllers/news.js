@@ -56,6 +56,8 @@ readabilify = function(link) {
         news.document = art.document;
         news.content = stripHTML(art.content);
         news.words = getWords(art.content);
+        
+        // maybe save it here?!
         d.resolve(news);
       } else { d.reject(err); }
     });

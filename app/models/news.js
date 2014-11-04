@@ -12,6 +12,7 @@ var NewsSchema    = new Schema({
   isRead      : { type: Boolean, default : false },
   published   : Date,
   document    : String,
+  submitted   : String,
   words       :  [],
   feed        :  {
     name    : String,
