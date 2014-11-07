@@ -4,8 +4,8 @@
   "manifest_version": 2,
   "minimum_chrome_version": "29",
   "description": "",
-  "key" : "amifagjciiajodldlhmbfdbkbffclmkk",
-  "icons" : { 
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlfIwvE6uR437Ao2rkpLNOiT8Ro2PF9CjzmjPjoS6/EIQx/YCDXfJDDvnCAwTC7Cobkypj+qkfrDcaQDiUy4AsuVCIqYvgAczp+0UYPC9TrDa4f68l6aD8RCxxNtlor8vRorlB0tCedNY/v4eWa/GstaM6ivFK/Lf63pZcVsroo19UskPlna2s6RJ3iOkGE13FgOAv0cerRaeJjLibo7FeIPR37OBzvu6794MU3RmY8IkJUjG8N1h1o4mvw9ISVcBlO8gIBzTVlN98LSnW1IYj2I2bTwz4qI1Wp2QssVpmCwu79sInTw++10Y5ffCRNcbuXpPFzpx3cDC6JM5C0MVyQIDAQAB",
+  "icons" : {
     "16" :  "images/monkey-16.png",
     "48" :  "images/monkey-48.png",
     "128" : "images/monkey-128.png"
@@ -25,4 +25,6 @@
     "default_popup" : "popup.html",
     "default_icon" : "images/monkey-48.png"
   }
+
+
 }
