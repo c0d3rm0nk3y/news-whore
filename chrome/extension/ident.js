@@ -43,6 +43,7 @@ var googlePlusUserLoader = (function() {
       } else {
         console.log('token acquired: %s , see chrome://identity-internals for details', token);
         theToken = token;
+        iSent();
         // **** insert send to sever code here... **** //
         changeState(STATE_AUTHTOKEN_ACQUIRED);
       }
@@ -100,7 +101,7 @@ var googlePlusUserLoader = (function() {
       btnSignin.addEventListener('click', iSignIn);
 
       btnSend = document.querySelector('#submit');
-      btnSend.addEventListener('click', iSent);
+      btnSend.addEventListener('click', iSignIn);
     }
   };
 })();
