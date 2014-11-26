@@ -1,4 +1,6 @@
-var request = require('request');
+var read        = require('node-readability');
+var request     = require('request');
+var q           = require('q');
 var User     		= require('../app/models/user');
 
 // app/routes.js
@@ -21,43 +23,125 @@ module.exports = function(app, passport) {
 		res.render('login.ejs', { message: req.flash('loginMessage') });
 	});
   
-  app.post('/submitArticle', function(req, res) {
-    console.log('submitArticle: link: %s\ntoken: %s', req.body.link, req.body.token);
+  app.get('/submitArticle', function(req, res) {
+    console.log('submitArticle\nlink: %s\ntoken: %s', req.query.link, req.query.token);
     //res.json({message: 'feature coming soon..'});
     // https://www.googleapis.com/oauth2/v1/tokeninfo
-    request.post(
-      'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + req.body.token,
-      {},
-      function(error, response, body) {               
-        if(!error && response.statusCode == 200) {
-          var r = JSON.parse(body);
-          
-          
-          
-          User.findOneAndUpdate(
-            {'google.id' : r.user_id},
-            {$push: { "links" : req.body.link}},
-            { safe: true, upsert: true},
-            function(err, user) {
-              console.log(err);
-              res.json(user);
-            }
-          );
-          
-//           User.findOne({'google.id': r.user_id}, 'google.name links', function(err, user) {
-//             if(err) res.json(err);
-//             user.links.update($push())
-//             res.json(user);
-//           });
-          //res.json(r);
-          //console.log(r);
-        }
+    
+    checkandverify(req.query).then(
+      function(result) {
+        console.log(result);
+        res.json(result);
+      },
+      function(err) {
+        console.log(err);
+        res.json(err);
       }
     );
-    // hit up https://www.googleapis.com/oauth2/v1/tokeninfo to get user info
     
-  });
+    // might need to move the whole bloody mess into a promise and have it returned here for posting.. i'm guessing
+    // waiting will not work..
 
+    // just a theory...    a game theory..
+//     request.post(
+//       'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + req.query.token,
+//       {},
+//       function(error, response, body) {               
+//         if(!error && response.statusCode == 200) {
+//           var r = JSON.parse(body);
+          
+//           User.findOneAndUpdate(
+//             {'google.id' : r.user_id},
+//             {$push: { "links" : req.query.link}},
+//             { safe: true, upsert: true},
+//             function(err, user) {
+//               if(err) console.log(err);
+//               // get readify 
+//               readabilify(req.query.link).then(
+//                 function(result) {
+//                   console.log('readabilify returned successful:\n' + result);
+//                   res.json(result);
+//                 },
+//                 function(err) {
+//                   console.log('readabilify failed:\n' + err);
+//                   res.json({err :err});
+//                 }
+//               );
+              
+//             }
+//           );
+//         }
+//       }
+//     );
+  });
+  
+  authUser = function(token) {
+    console.log('authUser()..');
+    var d = q.defer();
+    try {
+      request.post(
+      'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + token,
+      {},
+      function(error, response, body) {
+        console.log()
+        if(!error && response.statusCode == 200) {
+          d.resolve(true);  
+        } else {
+          d.resolve(false);
+        }
+      });
+    }catch(ex) {
+      d.reject(ex);
+    }
+  }
+  
+  checkandverify = function(query) {
+    console.log('check and verify()..');
+    var d = q.defer();
+    var token = query.token;
+    var link = query.link;
+    try {
+      authUser(token).then(
+        function(isAuth) {
+          if(isAuth) { // user is registered.. 
+            readability(link).then(
+              function(result) {
+                d.resolve(result);
+              },
+              function(err) {
+                d.reject(err);
+              }
+            );
+          } else { // user is not registered 
+            d.resolve({ message: "not a registered user.."})
+          }
+        },
+        function(err) {
+          d.reject(err);
+        }
+      );     
+    } catch(ex) {
+      d.reject(ex);
+    }
+  }
+
+  readabilify = function(link) {
+  try {
+    console.log('readabilify()...');
+    var d = q.defer();
+    console.log(link);
+    read(link, function(err, art, meta) { 
+      if(art !== null && art !== undefined && err === null) {
+        console.log('link found:\n' + art);
+        // maybe save it here?!
+        d.resolve(art);
+      } else { d.reject(err); }
+    });
+    
+    return d.promise;
+  } catch(ex) { console.log('readabilify() ex: %s', ex); }
+}
+  
 	// process the login form
 	app.post('/login', passport.authenticate('local-login', {
 		successRedirect : '/profile', // redirect to the secure profile section
